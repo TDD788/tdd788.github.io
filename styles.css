@@ -2,15 +2,15 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #333; /* Fondo oscuro */
-    color: #f0f0f0; /* Color de texto claro */
+    background-color: #333;
+    color: #f0f0f0;
 }
 
 .container {
     width: 80%;
     max-width: 960px;
     margin: 20px auto;
-    background-color: #222; /* Color de fondo del contenedor */
+    background-color: #222;
     border-radius: 56px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 20px;
@@ -22,15 +22,21 @@ header {
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid #444;
-    border-radius: 60px; /* Bordes redondeados */
+    border-radius: 60px; /* Mantenemos consistencia en el valor de border-radius */
 }
 
-.menu-toggle, .options-toggle {
+.menu-toggle {
     cursor: pointer;
     padding: 10px;
     font-size: 1.5rem;
-    color: #f0f0f0; /* Color de ícono claro */
-    border-radius: 60px; /* Bordes redondeados */
+    color: #f0f0f0;
+    border-radius: 50%; /* Ajustamos border-radius para que sea consistente con el tamaño del botón */
+    background-color: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
 }
 
 h2 {
@@ -39,28 +45,26 @@ h2 {
 
 main {
     display: flex;
-    flex-direction: column; /* Apilar elementos verticalmente */
+    flex-direction: column;
 }
 
 section {
     flex: 1;
     padding: 20px;
     margin-bottom: 20px;
-    border-radius: 60px; /* Bordes redondeados */
+    border-radius: 60px; /* Mantenemos consistencia en el valor de border-radius */
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
-    background-color: #222; /* Capa 2 background */
+    background-color: #111;
     position: relative;
 }
 
 section.layer-1 {
-    background-color: #666; /* Capa 1 background */
-    border-radius: 60px; /* Bordes redondeados */
+    background-color: #666;
 }
 
 section.layer-2 {
-    background-color: #222; /* Capa 2 background */
+    background-color: #222;
     position: relative;
-    border-radius: 60px; /* Bordes redondeados */
 }
 
 section.layer-2:before {
@@ -70,15 +74,13 @@ section.layer-2:before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)); /* Gradiente de superposición */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5));
     z-index: -1;
-    border-radius: 60px; /* Bordes redondeados */
 }
 
 section.layer-3 {
-    background-color: #333; /* Capa 3 background */
+    background-color: #333;
     padding: 30px;
-    border-radius: 60px; /* Bordes redondeados */
 }
 
 footer {
@@ -86,7 +88,7 @@ footer {
     margin-top: 20px;
     padding-top: 10px;
     border-top: 1px solid #444;
-    border-radius: 60px; /* Bordes redondeados */
+    border-radius: 60px;
 }
 
 footer p {
@@ -94,7 +96,6 @@ footer p {
     font-size: 14px;
 }
 
-/* Estilos para superposición de opciones */
 .overlay {
     position: fixed;
     top: 0;
@@ -106,13 +107,13 @@ footer p {
     display: none;
     justify-content: center;
     align-items: center;
-    border-radius: 0px; /* Bordes redondeados */
+    border-radius: 0px; /* Ajustamos border-radius si es necesario */
 }
 
 .overlay-content {
     background-color: #222;
     padding: 20px;
-    border-radius: 60px; /* Bordes redondeados */
+    border-radius: 60px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     width: 80%;
     max-width: 600px;
@@ -126,19 +127,22 @@ footer p {
     font-size: 1.5rem;
     cursor: pointer;
     color: #666;
-    border-radius: 60px; /* Bordes redondeados */
+    border-radius: 60px;
 }
 
-/* Estilo para el botón de más opciones */
 .options-toggle {
     cursor: pointer;
     padding: 10px;
     font-size: 1.5rem;
-    color: #f0f0f0; /* Color de ícono claro */
+    color: #f0f0f0;
     transition: color 0.3s ease;
-    border-radius: 60px; /* Bordes redondeados */
+    border-radius: 60px;
 }
 
 .options-toggle:hover {
-    color: #ccc; /* Cambiar color de ícono al pasar el cursor */
+    color: #ccc;
+}
+
+.rounded-img {
+    border-radius: 60px; /* Aseguramos que las imágenes redondeadas mantengan el mismo valor */
 }

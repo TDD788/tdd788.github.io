@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dark's Web</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="script.js"></script>
 </head>
 <body>
     <header>
-        <div id="header" align="center">
-        	<h1>Welcome to Dark's Web</h1>
-        </div>
+        <section class="box">
+            <div id="header" align="center">
+                <h1>Welcome to Dark's Page</h1>
+            </div>
+        </section>
         <div class="menu-toggle" onclick="toggleMenu()">☰</div>
     </header>
     
@@ -34,6 +38,22 @@
                     <li><strong>Display:</strong> Large screen for enhanced user experience</li>
                 </ul>
             </section>
+            
+            <section class="box" id="repo-info">
+                <h2>A12s-DevTree Repository Information</h2>
+                <p id="commit-count"><strong>Total Commits:</strong> Loading...</p>
+                <p id="primary-language"><strong>Primary Language:</strong> Loading...</p>
+                <p><strong>Languages Used:</strong></p>
+                <ul id="languages-used">
+                    <li>Loading...</li>
+                </ul>
+                <div>
+                    <canvas id="activityChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="languagesChart"></canvas>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -47,23 +67,23 @@
             <h3>More Options</h3>
             <p>Developer of custom kernels and recovery solutions for Samsung A12s (Nacho).</p>
             <p>Skills include working with C, Makefile, Bash, Linux terminals, and emulators.</p>
-                 <div class="footer-links">
-            <a href="https://t.me/TheDarkDeath788">
-                <img src="https://img.shields.io/badge/Telegram-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/>
-            </a>
-            <a href="https://twitter.com/TheDarkDeath788">
-                <img src="https://img.shields.io/badge/Twitter/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Twitter Badge"/>
-            </a>
-            <a href="https://gitlab.com/TheDarkDeath788">
-                <img src="https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" alt="GitLab Badge"/>
-            </a>
-            <a href="https://discord.com/users/TheDarkDeath788">
-                <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Badge"/>
-            </a>
-            <a href="https://xdaforums.com/m/thedarkdeath788.12239907">
-                <img src="https://img.shields.io/badge/XDA-f59714?style=for-the-badge&logo=xdadevelopers&logoColor=white" alt="Discord Badge"/>
-            </a>
-        </div>
+            <div class="footer-links">
+                <a href="https://t.me/TheDarkDeath788">
+                    <img src="https://img.shields.io/badge/Telegram-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/>
+                </a>
+                <a href="https://twitter.com/TheDarkDeath788">
+                    <img src="https://img.shields.io/badge/Twitter/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Twitter Badge"/>
+                </a>
+                <a href="https://gitlab.com/TheDarkDeath788">
+                    <img src="https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" alt="GitLab Badge"/>
+                </a>
+                <a href="https://discord.com/users/TheDarkDeath788">
+                    <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Badge"/>
+                </a>
+                <a href="https://xdaforums.com/m/thedarkdeath788.12239907">
+                    <img src="https://img.shields.io/badge/XDA-f59714?style=for-the-badge&logo=xdadevelopers&logoColor=white" alt="XDA Developers Badge"/>
+                </a>
+            </div>
         </div>
     </div>
 
