@@ -22,7 +22,7 @@ header {
     align-items: center;
     padding-bottom: 10px;
     border-bottom: 1px solid #444;
-    border-radius: 60px; /* Mantenemos consistencia en el valor de border-radius */
+    border-radius: 60px;
 }
 
 .menu-toggle {
@@ -30,7 +30,7 @@ header {
     padding: 10px;
     font-size: 1.5rem;
     color: #f0f0f0;
-    border-radius: 50%; /* Ajustamos border-radius para que sea consistente con el tamaño del botón */
+    border-radius: 50%;
     background-color: #111;
     display: flex;
     justify-content: center;
@@ -52,7 +52,7 @@ section {
     flex: 1;
     padding: 20px;
     margin-bottom: 20px;
-    border-radius: 60px; /* Mantenemos consistencia en el valor de border-radius */
+    border-radius: 60px;
     box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
     background-color: #111;
     position: relative;
@@ -107,7 +107,7 @@ footer p {
     display: none;
     justify-content: center;
     align-items: center;
-    border-radius: 0px; /* Ajustamos border-radius si es necesario */
+    border-radius: 0px;
 }
 
 .overlay-content {
@@ -144,5 +144,5 @@ footer p {
 }
 
 .rounded-img {
-    border-radius: 60px; /* Aseguramos que las imágenes redondeadas mantengan el mismo valor */
+    border-radius: 60px;
 }

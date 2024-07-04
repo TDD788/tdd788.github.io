@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // Función para obtener los datos del repositorio desde GitHub API
     function fetchRepoData() {
         const apiUrl = 'https://api.github.com/repos/TDD788/A12s-DevTree';
         fetch(apiUrl)
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                // Procesar los datos obtenidos
                 updateRepoInfo(data);
                 updateCommitActivity(data);
                 updateLanguageChart(data);
@@ -21,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // Función para actualizar la información del repositorio en la página
     function updateRepoInfo(data) {
         const commitCount = data?.size || 'Not available';
         const primaryLanguage = data?.language || 'Not specified';
@@ -50,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Función para actualizar el gráfico de actividad de commits
     function updateCommitActivity(data) {
         const commitsUrl = `${data?.url}/stats/commit_activity`;
         fetch(commitsUrl)
@@ -62,12 +58,11 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .then(commitActivity => {
                 const labels = commitActivity.map(item => {
-                    const date = new Date(item.week * 1000); // Convertir timestamp a fecha
+                    const date = new Date(item.week * 1000);
                     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 });
                 const dataPoints = commitActivity.map(item => item.total);
 
-                // Configurar el gráfico de actividad de commits utilizando Chart.js
                 const ctx = document.getElementById('activityChart').getContext('2d');
                 const activityChart = new Chart(ctx, {
                     type: 'line',
@@ -81,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             borderWidth: 2,
                             pointBackgroundColor: 'rgba(0, 0, 0, 1)',
                             pointBorderWidth: 2,
-                            pointRadius: 0,
+                            pointRadius: 1,
                             pointHoverRadius: 7
                         }]
                     },
@@ -104,12 +99,10 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error fetching commit activity data:', error);
-                // Mostrar mensaje de error en lugar del gráfico
                 document.getElementById('activityChart').innerHTML = '<p>Error fetching commit activity data</p>';
             });
     }
 
-    // Función para actualizar el gráfico de lenguajes utilizados
     function updateLanguageChart(data) {
         const languagesUrl = `${data?.url}/languages`;
         fetch(languagesUrl)
@@ -123,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const labels = Object.keys(languagesData);
                 const dataPoints = Object.values(languagesData);
 
-                // Configurar el gráfico de lenguajes utilizados utilizando Chart.js
                 const ctx = document.getElementById('languagesChart').getContext('2d');
                 const languagesChart = new Chart(ctx, {
                     type: 'doughnut',
@@ -148,7 +140,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     }
                 });
 
-                // Mostrar porcentajes al lado del gráfico
                 const languagesList = Object.keys(languagesData);
                 const total = dataPoints.reduce((acc, curr) => acc + curr, 0);
                 const percentages = languagesList.map(language => `${language}: ${(languagesData[language] / total * 100).toFixed(2)}%`);
@@ -156,18 +147,15 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error fetching languages data:', error);
-                // Mostrar mensaje de error en lugar del gráfico
                 document.getElementById('languagesChart').innerHTML = '<p>Error fetching languages data</p>';
             });
     }
 
-    // Función para mostrar un mensaje de error en caso de falla en la obtención de datos
     function displayErrorMessage() {
         document.getElementById('commit-count').innerHTML = '<strong>Total Commits:</strong> Not available';
         document.getElementById('primary-language').innerHTML = '<strong>Primary Language:</strong> Not specified';
         document.getElementById('languages-used').innerHTML = '<li>Error fetching repository data</li>';
     }
 
-    // Iniciar la carga de datos al cargar la página
     fetchRepoData();
 });
