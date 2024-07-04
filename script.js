@@ -159,14 +159,3 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetchRepoData();
 });
-
-<script>
-    function toggleMenu() {
-        var overlay = document.getElementById('overlay');
-        var menuToggle = document.querySelector('.menu-toggle');
-        var isOverlayVisible = overlay.style.display === 'flex';
-
-        overlay.style.display = isOverlayVisible ? 'none' : 'flex';
-        menuToggle.classList.toggle('rotated', !isOverlayVisible);
-    }
-</script>
