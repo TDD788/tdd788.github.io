@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Función para actualizar el gráfico de actividad de commits
     function updateCommitActivity(data) {
-        const commitsUrl = `${data?.url}/commits`;
+        const commitsUrl = `${data?.url}/stats/commit_activity`;
         fetch(commitsUrl)
             .then(response => {
                 if (!response.ok) {
@@ -76,10 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Commit Activity',
                             data: dataPoints,
-                            borderColor: 'rgba(255, 255, 255, 1)',
+                            borderColor: 'rgba(0, 0, 0, 1)',
                             backgroundColor: 'rgba(255, 255, 255, 0)',
                             borderWidth: 2,
-                            pointBackgroundColor: 'rgba(255, 255, 255, 1)',
+                            pointBackgroundColor: 'rgba(0, 0, 0, 1)',
                             pointBorderWidth: 2,
                             pointRadius: 5,
                             pointHoverRadius: 7
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Error fetching commit activity data:', error);
                 // Mostrar mensaje de error en lugar del gráfico
-                document.getElementById('activityChart').innerHTML = '<p>Error fetching commit activity data</p>';
+                document.getElementById('activityChart').parentElement.innerHTML = '<p>Error fetching commit activity data</p>';
             });
     }
 
