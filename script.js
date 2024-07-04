@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Función para actualizar el gráfico de actividad de commits
     function updateCommitActivity(data) {
-        const commitsUrl = `${data?.url}/commits?since=2024-01-01`;
+        const commitsUrl = `${data?.url}/commits`;
         fetch(commitsUrl)
             .then(response => {
                 if (!response.ok) {
