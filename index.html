@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark's Web</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div id="header" align="center">
+        	<h1>Welcome to Dark's Web</h1>
+        </div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+    </header>
+    
+    <div class="container">
+        <main>
+            <section class="box">
+                <h2>What is a Kernel?</h2>
+                <p>A kernel is the core component of an operating system that manages system resources, memory, and hardware. It acts as a bridge between applications and the actual data processing done at the hardware level.</p>
+            </section>
+
+            <section class="box">
+                <h2>Understanding Recovery</h2>
+                <p>In computing, recovery refers to the process of restoring a system to a previous state or repairing a malfunctioning system. In Android devices, a recovery image is a specialized bootable partition that allows users to perform system updates, backups, and restores.</p>
+            </section>
+
+            <section class="box">
+                <h2>Samsung A12s (Nacho)</h2>
+                <p>The Samsung A12s, also known as "Samsung A12 Nacho," is a mid-range smartphone known for its affordability and solid performance. It features a Samsung Exynos processor and a large display, providing an enhanced user experience.</p>
+                <ul>
+                    <li><strong>Processor:</strong> Samsung Exynos series</li>
+                    <li><strong>Display:</strong> Large screen for enhanced user experience</li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 TheDarkDeath788. All rights reserved.</p>
+    </footer>
+
+    <div class="overlay" id="overlay">
+        <div class="overlay-content">
+            <span class="close-btn" onclick="toggleMenu()">×</span>
+            <h3>More Options</h3>
+            <p>Developer of custom kernels and recovery solutions for Samsung A12s (Nacho).</p>
+            <p>Skills include working with C, Makefile, Bash, Linux terminals, and emulators.</p>
+                 <div class="footer-links">
+            <a href="https://t.me/TheDarkDeath788">
+                <img src="https://img.shields.io/badge/Telegram-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/>
+            </a>
+            <a href="https://twitter.com/TheDarkDeath788">
+                <img src="https://img.shields.io/badge/Twitter/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Twitter Badge"/>
+            </a>
+            <a href="https://gitlab.com/TheDarkDeath788">
+                <img src="https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" alt="GitLab Badge"/>
+            </a>
+            <a href="https://discord.com/users/TheDarkDeath788">
+                <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Badge"/>
+            </a>
+            <a href="https://xdaforums.com/m/thedarkdeath788.12239907">
+                <img src="https://img.shields.io/badge/XDA-f59714?style=for-the-badge&logo=xdadevelopers&logoColor=white" alt="Discord Badge"/>
+            </a>
+        </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            var overlay = document.getElementById('overlay');
+            overlay.style.display = (overlay.style.display == 'flex') ? 'none' : 'flex';
+        }
+    </script>
+</body>
+</html>
