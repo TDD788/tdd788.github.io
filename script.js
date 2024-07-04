@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             borderWidth: 2,
                             pointBackgroundColor: 'rgba(0, 0, 0, 1)',
                             pointBorderWidth: 2,
-                            pointRadius: 1,
+                            pointRadius: 2,
                             pointHoverRadius: 7
                         }]
                     },
