@@ -76,13 +76,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Commit Activity',
                             data: dataPoints,
-                            borderColor: 'rgba(255, 255, 255, 0)',
-                            backgroundColor: 'rgba(255, 255, 255, 0)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
                             borderWidth: 2,
-                            pointBackgroundColor: 'rgba(255, 255, 255, 255)',
-                            pointBorderWidth: 0,
-                            pointRadius: 0,
-                            pointHoverRadius: 0
+                            pointRadius: 0 // Remover los puntos
                         }]
                     },
                     options: {
@@ -97,6 +94,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 ticks: {
                                     color: 'rgba(255, 255, 255, 0.8)'
                                 }
+                            }
+                        },
+                        elements: {
+                            line: {
+                                tension: 0.4 // Suavizar las curvas
                             }
                         }
                     }
