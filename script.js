@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Commit Activity',
                             data: dataPoints,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(105, 105, 105, 1)', // Gris oscuro
+                            backgroundColor: 'rgba(105, 105, 105, 0.2)', // Gris oscuro con transparencia
                             borderWidth: 2,
                             pointRadius: 0 // Remover los puntos
                         }]
@@ -134,7 +134,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Languages Used',
                             data: dataPoints,
-                            backgroundColor: ['#ffffff', '#cccccc', '#888888', '#aaaaaa', '#dddddd', '#bbbbbb'],
+                            backgroundColor: [
+                                'rgba(105, 105, 105, 0.6)', // Gris oscuro con transparencia
+                                'rgba(169, 169, 169, 0.6)', // Gris oscuro con transparencia
+                                'rgba(192, 192, 192, 0.6)', // Gris oscuro con transparencia
+                                'rgba(211, 211, 211, 0.6)', // Gris oscuro con transparencia
+                                'rgba(220, 220, 220, 0.6)', // Gris oscuro con transparencia
+                                'rgba(245, 245, 245, 0.6)'  // Gris oscuro con transparencia
+                            ],
                             borderWidth: 1
                         }]
                     },
