@@ -62,35 +62,39 @@
     </footer>
 
     <div class="overlay" id="overlay">
-        <div class="overlay-content">
-            <span class="close-btn" onclick="toggleMenu()">×</span>
-            <h3>More Options</h3>
-            <p>Developer of custom kernels and recovery solutions for Samsung A12s (Nacho).</p>
-            <p>Skills include working with C, Makefile, Bash, Linux terminals, and emulators.</p>
-            <div class="footer-links">
-                <a href="https://t.me/TheDarkDeath788">
-                    <img src="https://img.shields.io/badge/Telegram-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/>
-                </a>
-                <a href="https://twitter.com/TheDarkDeath788">
-                    <img src="https://img.shields.io/badge/Twitter/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Twitter Badge"/>
-                </a>
-                <a href="https://gitlab.com/TheDarkDeath788">
-                    <img src="https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" alt="GitLab Badge"/>
-                </a>
-                <a href="https://discord.com/users/TheDarkDeath788">
-                    <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Badge"/>
-                </a>
-                <a href="https://xdaforums.com/m/thedarkdeath788.12239907">
-                    <img src="https://img.shields.io/badge/XDA-f59714?style=for-the-badge&logo=xdadevelopers&logoColor=white" alt="XDA Developers Badge"/>
-                </a>
-            </div>
-        </div>
+        <div class="overlay-content box">
+           <span class="close-btn" onclick="toggleMenu()">×</span>
+           <h3>More Options</h3>
+           <p>Developer of custom kernels and recovery solutions for Samsung A12s (Nacho).</p>
+           <p>Skills include working with C, Makefile, Bash, Linux terminals, and emulators.</p>
+           <div class="footer-links">
+               <a href="https://t.me/TheDarkDeath788">
+                   <img src="https://img.shields.io/badge/Telegram-0088cc?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram Badge"/>
+               </a>
+               <a href="https://twitter.com/TheDarkDeath788">
+                   <img src="https://img.shields.io/badge/Twitter/X-000000?style=for-the-badge&logo=x&logoColor=white" alt="Twitter Badge"/>
+               </a>
+               <a href="https://gitlab.com/TheDarkDeath788">
+                   <img src="https://img.shields.io/badge/GitLab-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white" alt="GitLab Badge"/>
+               </a>
+               <a href="https://discord.com/users/TheDarkDeath788">
+                   <img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord Badge"/>
+               </a>
+               <a href="https://xdaforums.com/m/thedarkdeath788.12239907">
+                <img src="https://img.shields.io/badge/XDA-f59714?style=for-the-badge&logo=xdadevelopers&logoColor=white" alt="XDA Developers Badge"/>
+               </a>
+           </div>
+       </div>
     </div>
 
     <script>
         function toggleMenu() {
             var overlay = document.getElementById('overlay');
-            overlay.style.display = (overlay.style.display == 'flex') ? 'none' : 'flex';
+            var menuToggle = document.querySelector('.menu-toggle');
+            var isOverlayVisible = overlay.style.display === 'flex';
+
+            overlay.style.display = isOverlayVisible ? 'none' : 'flex';
+            menuToggle.classList.toggle('rotated', !isOverlayVisible);
         }
     </script>
 </body>
