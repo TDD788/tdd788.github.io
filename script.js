@@ -76,10 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Commit Activity',
                             data: dataPoints,
-                            borderColor: 'rgba(105, 105, 105, 1)', // Gris oscuro
-                            backgroundColor: 'rgba(105, 105, 105, 0.2)', // Gris oscuro con transparencia
+                            borderColor: 'rgba(255, 255, 255, 1)',
+                            backgroundColor: 'rgba(255, 255, 255, 0)',
                             borderWidth: 2,
-                            pointRadius: 0 // Remover los puntos
+                            pointBackgroundColor: 'rgba(0, 0, 0, 1)',
+                            pointBorderWidth: 2,
+                            pointRadius: 0,
+                            pointHoverRadius: 7
                         }]
                     },
                     options: {
@@ -95,11 +98,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                     color: 'rgba(255, 255, 255, 0.8)'
                                 }
                             }
-                        },
-                        elements: {
-                            line: {
-                                tension: 0.4 // Suavizar las curvas
-                            }
                         }
                     }
                 });
@@ -107,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Error fetching commit activity data:', error);
                 // Mostrar mensaje de error en lugar del gráfico
-                document.getElementById('activityChart').parentElement.innerHTML = '<p>Error fetching commit activity data</p>';
+                document.getElementById('activityChart').innerHTML = '<p>Error fetching commit activity data</p>';
             });
     }
 
@@ -134,14 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         datasets: [{
                             label: 'Languages Used',
                             data: dataPoints,
-                            backgroundColor: [
-                                'rgba(105, 105, 105, 0.6)', // Gris oscuro con transparencia
-                                'rgba(169, 169, 169, 0.6)', // Gris oscuro con transparencia
-                                'rgba(192, 192, 192, 0.6)', // Gris oscuro con transparencia
-                                'rgba(211, 211, 211, 0.6)', // Gris oscuro con transparencia
-                                'rgba(220, 220, 220, 0.6)', // Gris oscuro con transparencia
-                                'rgba(245, 245, 245, 0.6)'  // Gris oscuro con transparencia
-                            ],
+                            backgroundColor: ['#ffffff', '#cccccc', '#888888', '#aaaaaa', '#dddddd', '#bbbbbb'],
                             borderWidth: 1
                         }]
                     },
