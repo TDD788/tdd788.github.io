@@ -270,6 +270,7 @@ function createPetals(type) {
         const size = type === 'happy' ? (10 + Math.random() * 20) : (5 + Math.random() * 15);
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * -window.innerHeight;
+        const speedMultiplier = isMobileDevice() ? 1.8 : 1.0;
 
         petal.style.width = `${size}px`;
         petal.style.height = `${size}px`;
@@ -286,8 +287,9 @@ function createPetals(type) {
             el: petal,
             x: x,
             y: y,
+            
             vx: Math.random() * 1 - 0.5, // deriva lateral inicial
-            vy: 1 + Math.random() * 1.5,
+            vy: (1 + Math.random() * 1.5) * speedMultiplier,
             swayPhase: Math.random() * Math.PI * 2, // para movimiento sinusoidal
             size: size
         });
@@ -310,7 +312,7 @@ function createPetals(type) {
             }
 
             // Gravedad suave
-            p.vy += 0.01;
+            p.vy += 0.03 * speedMultiplier;
 
             // Movimiento
             p.x += p.vx + sway;
@@ -362,6 +364,7 @@ function createBrokenPetals() {
         const size = 5 + Math.random() * 20;
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * -window.innerHeight;
+        const speedMultiplier = isMobileDevice() ? 1.8 : 1.0;
 
         petal.style.width = `${size}px`;
         petal.style.height = `${size}px`;
@@ -386,7 +389,7 @@ function createBrokenPetals() {
             x: x,
             y: y,
             vx: Math.random() * 1.6 - 0.6,
-            vy: 2 + Math.random() * 2,  // caída más rápida que antes
+            vy: (2 + Math.random() * 2) * speedMultiplier,
             swayPhase: Math.random() * Math.PI * 2,
             rotation: Math.random() * 360,
             rotationSpeed: (Math.random() - 0.5) * 3
@@ -407,7 +410,7 @@ function createBrokenPetals() {
                 p.vy += dy * force * 0.01;
             }
 
-            p.vy += 0.03; // gravedad más fuerte
+            p.vy += 0.03 * speedMultiplier;
             p.rotation += p.rotationSpeed;
 
             p.x += p.vx + sway;
@@ -434,6 +437,10 @@ function createBrokenPetals() {
     }
 
     animateBrokenPetals();
+}
+
+function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
 }
 
 function createHearts() {

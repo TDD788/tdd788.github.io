@@ -701,17 +701,6 @@ button:hover::before {
   box-shadow: 0 0 30px currentColor !important;
 }
 
-canvas {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: transparent;
-  z-index: 1;
-}
-
 #overlay {
   position: fixed;
   top: 0;

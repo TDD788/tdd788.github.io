@@ -21,10 +21,15 @@ function startViewer(regions) {
     // Ajustar resolución
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
-        canvas.width = window.innerWidth * dpr;
-        canvas.height = window.innerHeight * dpr;
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        canvas.width = width * dpr;
+        canvas.height = height * dpr;
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.scale(dpr, dpr);
     }
@@ -103,7 +108,8 @@ if (currentIndex >= regions.length) {
     function drawStatic(regionsToDraw) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);
+
 
         for (const region of regionsToDraw) {
             const points = region.contour;
