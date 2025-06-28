@@ -159,3 +159,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetchRepoData();
 });
+
+let menuClickCount = 0;
+let lastClickTime = 0;
+
+function toggleMenu() {
+  const now = Date.now();
+  if (now - lastClickTime > 1500) {
+    menuClickCount = 0;
+  }
+  
+  menuClickCount++;
+  lastClickTime = now;
+  if (menuClickCount >= 5) {
+    window.location.href = 'otrapagina.html';
+    return;
+  }
+  var overlay = document.getElementById('overlay');
+  var menuToggle = document.querySelector('.menu-toggle');
+  var isOverlayVisible = overlay.style.display === 'flex';
+
+  overlay.style.display = isOverlayVisible ? 'none' : 'flex';
+  menuToggle.classList.toggle('rotated', !isOverlayVisible);
+  console.log(`Clicks: ${menuClickCount}`);
+}
