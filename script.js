@@ -171,7 +171,7 @@ function toggleMenu() {
   
   menuClickCount++;
   lastClickTime = now;
-  if (menuClickCount >= 5) {
+  if (menuClickCount >= 3) {
     window.location.href = 'easteregg/index.html';
     return;
   }
