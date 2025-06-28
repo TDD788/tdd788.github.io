@@ -104,8 +104,8 @@ function startExperience() {
     
     // Personalizar pregunta según género
     const proposalText = senderGender === 'male' ? 
-        `¿${recipientName}, quieres ser mi novio?` : 
-        `¿${recipientName}, quieres ser mi novia?`;
+        `¿${recipientName}, quieres ser mi novia?` : 
+        `¿${recipientName}, quieres ser mi novio?`;
     
     proposal.textContent = proposalText;
     
