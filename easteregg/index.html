@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Declaración Especial</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+</head>
+<body>
+    <div class="background-stars"></div>
+    <canvas id="canvas"></canvas>
+    <div class="petal-overlay"></div>
+    <div class="hearts"></div>
+    
+    <div class="container">
+        <!-- Pantalla inicial para ingresar nombre -->
+        <div id="name-screen" class="centered">
+            <div class="neon-text">¿Cuál es tu nombre?</div>
+            <input type="text" id="recipient-name" placeholder="¿Cuál es tu nombre?" class="name-input">
+            <button id="confirm-recipient" class="name-button">Continuar</button>
+        </div>
+
+        <!-- Pantalla para ingresar el remitente -->
+        <div id="sender-screen" class="centered hidden">
+            <div class="neon-text">¿Quién te lo mandó?</div>
+            <input type="text" id="sender-name" placeholder="¿Quién te lo mandó?" class="name-input">
+            <button id="confirm-sender" class="name-button">Continuar</button>
+        </div>
+        
+        <!-- Pantalla de selección de género -->
+        <div id="gender-screen" class="centered hidden">
+            <div class="neon-text" id="gender-question">¿Eres chico o chica?</div>
+            <div class="button-container">
+                <button id="btn-chico">Soy Hombre</button>
+                <button id="btn-chica">Soy Mujer</button>
+            </div>
+        </div>
+        
+        <!-- Pantalla de propuesta -->
+        <div id="overlay" class="hidden">
+            <div id="proposal">¿Quieres ser mi novia?</div>
+            <div id="answer-buttons" class="hidden">
+                <button class="btn-si">¡Sí!</button>
+                <button class="btn-no">No</button>
+            </div>
+        </div>
+        
+        <!-- Pantalla final -->
+        <div id="final-screen" class="centered hidden">
+            <div class="neon-text" id="final-message"></div>
+            <div id="result-image"></div>
+        </div>
+    </div>
+    
+    <div class="message">Hecho por Milton</span></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.js"></script>
+    <script src="base.js"></script>
+    <script src="roses.js"></script>
+</body>
+</html>
