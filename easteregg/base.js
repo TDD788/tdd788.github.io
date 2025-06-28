@@ -101,28 +101,19 @@ function handleSenderConfirmation() {
 function startExperience() {
     genderScreen.classList.add('hidden');
     overlay.classList.remove('hidden');
-    
-    // Personalizar pregunta según género
-    const proposalText = senderGender === 'male' ? 
-        `¿${recipientName}, quieres ser mi novia?` : 
-        `¿${recipientName}, quieres ser mi novio?`;
-    
+    const proposalText = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'a' : 'o'}?`;
     proposal.textContent = proposalText;
-    
     setTimeout(() => {
         answerButtons.classList.remove('hidden');
     }, 2000);
 }
 
-// Manejar respuesta positiva
 function handlePositiveResponse() {
     response = 'Sí';
     responseTimestamp = new Date().toISOString();
-    
     createHearts();
     answerButtons.classList.add('hidden');
-    proposal.textContent = `¡${recipientName}, aceptaste ser mi novi${senderGender === 'male' ? 'o' : 'a'}! 💖`;
-    
+    proposal.textContent = `¡${recipientName}, aceptaste ser mi novi${senderGender === 'male' ? 'a' : 'o'}! 💖`;
     setTimeout(() => {
         overlay.classList.add('hidden');
         finalScreen.classList.remove('hidden');
@@ -255,51 +246,194 @@ async function sendResultsToEmail() {
 
 function createPetals(type) {
     const container = document.querySelector('.petal-overlay');
-    const petalCount = type === 'happy' ? 25 : 25;
-    const colors = type === 'happy' ? 
-        ['#ff66cc', '#ff3399', '#ff0066', '#ff99cc'] : 
-        ['#555', '#333', '#111', '#444'];
-    
-    // Limpiar pétalos existentes
     container.innerHTML = '';
-    
+
+    const colors = type === 'happy'
+        ? ['#ff66cc', '#ff3399', '#ff0066', '#ff99cc']
+        : ['#555', '#333', '#111', '#444'];
+
+    const petalCount = 35;
+    const petals = [];
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
     for (let i = 0; i < petalCount; i++) {
         const petal = document.createElement('div');
         petal.classList.add('petal');
-        
-        // Estilo según tipo
-        if (type === 'sad') {
-            petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            petal.style.borderRadius = '2px';
-            petal.style.transform = 'rotate(0deg)';
-            petal.style.opacity = 0.7;
-        } else {
-            petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            petal.style.borderRadius = '50% 0 50% 50%';
-            petal.style.transform = `rotate(${Math.random() * 360}deg)`;
-            petal.style.opacity = 0.9;
-        }
-        
-        // Tamaño aleatorio
-        const size = type === 'happy' ? 
-            (10 + Math.random() * 20) : 
-            (5 + Math.random() * 15);
+
+        const size = type === 'happy' ? (10 + Math.random() * 20) : (5 + Math.random() * 15);
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * -window.innerHeight;
+
         petal.style.width = `${size}px`;
         petal.style.height = `${size}px`;
-        
-        // Posición inicial
-        const startX = Math.random() * 100;
-        petal.style.left = `${startX}%`;
-        petal.style.top = '-10px';
-        
-        // Animación
-        const duration = 8 + Math.random() * 12;
-        const delay = Math.random() * 5;
-        const animationType = type === 'happy' ? 'fall-happy' : 'fall-sad';
-        petal.style.animation = `${animationType} ${duration}s linear ${delay}s infinite`;
-        
+        petal.style.position = 'absolute';
+        petal.style.left = `${x}px`;
+        petal.style.top = `${y}px`;
+        petal.style.opacity = type === 'happy' ? 0.9 : 0.7;
+        petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        petal.style.borderRadius = type === 'happy' ? '50% 0 50% 50%' : '2px';
+
         container.appendChild(petal);
+
+        petals.push({
+            el: petal,
+            x: x,
+            y: y,
+            vx: Math.random() * 1 - 0.5, // deriva lateral inicial
+            vy: 1 + Math.random() * 1.5,
+            swayPhase: Math.random() * Math.PI * 2, // para movimiento sinusoidal
+            size: size
+        });
     }
+
+    function animatePetals() {
+        for (const p of petals) {
+            // Movimiento tipo "zig-zag" lateral
+            const sway = Math.sin(p.swayPhase) * 0.8;
+            p.swayPhase += 0.05;
+
+            // Atracción leve al mouse
+            const dx = mouseX - p.x;
+            const dy = mouseY - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 120) {
+                const force = (1 - dist / 120) * 0.08;
+                p.vx += dx * force * 0.02;
+                p.vy += dy * force * 0.008;
+            }
+
+            // Gravedad suave
+            p.vy += 0.01;
+
+            // Movimiento
+            p.x += p.vx + sway;
+            p.y += p.vy;
+
+            // Suavizado de velocidad
+            p.vx *= 0.98;
+            p.vy *= 0.98;
+
+            // Reset si sale de pantalla
+            if (p.y > window.innerHeight + 50 || p.x < -50 || p.x > window.innerWidth + 50) {
+                p.x = Math.random() * window.innerWidth;
+                p.y = -20;
+                p.vx = Math.random() * 1 - 0.5;
+                p.vy = 1 + Math.random() * 1.5;
+                p.swayPhase = Math.random() * Math.PI * 2;
+            }
+
+            p.el.style.left = `${p.x}px`;
+            p.el.style.top = `${p.y}px`;
+        }
+
+        requestAnimationFrame(animatePetals);
+    }
+
+    animatePetals();
+}
+
+function createBrokenPetals() {
+    const container = document.querySelector('.petal-overlay');
+    container.innerHTML = '';
+
+    const colors = ['#444', '#333', '#222', '#555'];
+    const petalCount = 40 + Math.floor(Math.random() * 16); // entre 25 y 40
+    const petals = [];
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+    });
+
+    for (let i = 0; i < petalCount; i++) {
+        const petal = document.createElement('div');
+        petal.classList.add('petal');
+
+        const size = 5 + Math.random() * 20;
+        const x = Math.random() * window.innerWidth;
+        const y = Math.random() * -window.innerHeight;
+
+        petal.style.width = `${size}px`;
+        petal.style.height = `${size}px`;
+        petal.style.position = 'absolute';
+        petal.style.left = `${x}px`;
+        petal.style.top = `${y}px`;
+        petal.style.opacity = 0.7;
+        petal.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        petal.style.zIndex = 999;
+
+        // Forma rota
+        if (Math.random() < 0.5) {
+            petal.style.clipPath = "polygon(0 0, 100% 0, 80% 60%, 20% 100%, 0% 70%)";
+        } else {
+            petal.style.borderRadius = `${Math.random() * 30}% ${Math.random() * 50}% ${Math.random() * 40}% ${Math.random() * 20}%`;
+        }
+
+        container.appendChild(petal);
+
+        petals.push({
+            el: petal,
+            x: x,
+            y: y,
+            vx: Math.random() * 1.6 - 0.6,
+            vy: 2 + Math.random() * 2,  // caída más rápida que antes
+            swayPhase: Math.random() * Math.PI * 2,
+            rotation: Math.random() * 360,
+            rotationSpeed: (Math.random() - 0.5) * 3
+        });
+    }
+
+    function animateBrokenPetals() {
+        for (const p of petals) {
+            const sway = Math.sin(p.swayPhase) * 1.2;
+            p.swayPhase += 0.05;
+
+            const dx = mouseX - p.x;
+            const dy = mouseY - p.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 100) {
+                const force = (1 - dist / 100) * 0.07;
+                p.vx += dx * force * 0.015;
+                p.vy += dy * force * 0.01;
+            }
+
+            p.vy += 0.03; // gravedad más fuerte
+            p.rotation += p.rotationSpeed;
+
+            p.x += p.vx + sway;
+            p.y += p.vy;
+
+            p.vx *= 0.96;
+            p.vy *= 0.96;
+
+            if (p.y > window.innerHeight + 50 || p.x < -50 || p.x > window.innerWidth + 50) {
+                p.x = Math.random() * window.innerWidth;
+                p.y = -20;
+                p.vx = Math.random() * 1.2 - 0.6;
+                p.vy = 2 + Math.random() * 2;
+                p.swayPhase = Math.random() * Math.PI * 2;
+                p.rotation = Math.random() * 360;
+            }
+
+            p.el.style.left = `${p.x}px`;
+            p.el.style.top = `${p.y}px`;
+            p.el.style.transform = `rotate(${p.rotation}deg)`;
+        }
+
+        requestAnimationFrame(animateBrokenPetals);
+    }
+
+    animateBrokenPetals();
 }
 
 function createHearts() {
@@ -328,7 +462,7 @@ function createHearts() {
         heart.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         
         // Animación
-        const duration = 2 + Math.random() * 3;
+        const duration = 1.5 + Math.random() * 3;
         const delay = Math.random() * 2;
         heart.style.animation = `float-up ${duration}s ease-in ${delay}s infinite`;
         

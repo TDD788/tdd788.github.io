@@ -1,4 +1,5 @@
 // roses
+
 function startViewer(regions) {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
@@ -163,8 +164,8 @@ if (currentIndex >= regions.length) {
         // Personalizar mensaje según género
         const isFemale = document.getElementById('btn-chica').classList.contains('selected');
         proposalText.textContent = isFemale ? 
-            "¿Queres ser mi novia?" : 
-            "¿Queres ser mi novio?";
+            "¿Queres ser mi novio?" : 
+            "¿Queres ser mi novia?";
         
         overlay.classList.add('visible');
         answerButtons.classList.remove('hidden');
@@ -211,61 +212,6 @@ if (currentIndex >= regions.length) {
         container.style.transition = "filter 1.5s ease";
     }
 
-    function createBrokenPetals() {
-        const container = document.querySelector('.petal-overlay');
-        const petalCount = 50;
-        
-        // Limpiar pétalos existentes
-        container.innerHTML = '';
-        
-        for (let i = 0; i < petalCount; i++) {
-            const petal = document.createElement('div');
-            petal.classList.add('petal');
-            
-            // Estilo de pétalo roto
-            petal.style.backgroundColor = `hsl(0, 0%, ${20 + Math.random() * 30}%)`;
-            petal.style.borderRadius = '2px';
-            petal.style.opacity = 0.7;
-            
-            // Crear efecto de pétalo roto
-            if (Math.random() > 0.5) {
-                petal.style.clipPath = "polygon(0% 0%, 100% 0%, 60% 50%, 0% 100%)";
-            } else {
-                petal.style.clipPath = "polygon(40% 0%, 100% 50%, 60% 100%, 0% 50%)";
-            }
-            
-            // Tamaño aleatorio
-            const size = 5 + Math.random() * 15;
-            petal.style.width = `${size}px`;
-            petal.style.height = `${size}px`;
-            
-            // Posición inicial
-            const startX = Math.random() * 100;
-            petal.style.left = `${startX}%`;
-            petal.style.top = '-10px';
-            
-            // Animación con movimiento irregular
-            const duration = 8 + Math.random() * 12;
-            const delay = Math.random() * 5;
-            petal.style.animation = `
-                fall-broken ${duration}s linear ${delay}s infinite
-            `;
-            
-            container.appendChild(petal);
-        }
-        
-        // Agregar animaciones CSS dinámicamente
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes fall-broken {
-                0% { transform: translateY(0) rotate(0deg); opacity: 0.7; }
-                50% { transform: translateY(50vh) rotate(${Math.random() * 180}deg) translateX(${Math.random() * 50}px); opacity: 0.4; }
-                100% { transform: translateY(100vh) rotate(${Math.random() * 360}deg) scale(0.5); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-
     // Configurar botones de género
     const btnChico = document.getElementById('btn-chico');
     const btnChica = document.getElementById('btn-chica');
@@ -285,6 +231,30 @@ if (currentIndex >= regions.length) {
         genderSelection.classList.add('hidden');
         animateBuild();
     });
+// Saltear animación con tecla (ej. Espacio o Enter)
+document.addEventListener('keydown', (e) => {
+    if ((e.code === 'Space' || e.code === 'Enter') && !isProposalShown && genderSelected) {
+        animationPaused = true; // Detiene la animación
+
+        // Dibujar todas las regiones directamente
+        builtRegions = [...regions];
+        drawStatic(builtRegions);
+
+        // Capturar imagen final para rotación
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = canvas.width;
+        tempCanvas.height = canvas.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.drawImage(canvas, 0, 0);
+        rotationImage = tempCanvas;
+
+        // Mostrar propuesta y empezar rotación si aplica
+        if (!isSadMode) {
+            showProposal();
+            requestAnimationFrame(rotateDraw);
+        }
+    }
+});
 
     // Iniciar animación (pero se pausará si no se selecciona género)
     animateBuild();
