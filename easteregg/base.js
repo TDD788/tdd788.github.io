@@ -123,27 +123,6 @@ function handlePositiveResponse() {
     }, 3000);
 }
 
-// Manejar respuesta negativa
-function handleNegativeResponse() {
-    response = 'No';
-    responseTimestamp = new Date().toISOString();
-    
-    // Comportamiento persuasivo del botón No
-    if (btnNo.textContent === 'No') {
-        btnNo.textContent = 'Segura?';
-        btnNo.style.transform = 'translateX(50px)';
-    } else if (btnNo.textContent === 'Segura?') {
-        btnNo.textContent = 'Por favor?';
-        btnNo.style.transform = 'translateX(-50px)';
-    } else if (btnNo.textContent === 'Por favor?') {
-        btnNo.textContent = 'Segurísima?';
-        btnNo.style.transform = 'translateX(0)';
-    } else {
-        btnNo.textContent = 'No';
-        btnNo.style.transform = '';
-    }
-}
-
 // Crear estrellas de fondo
 function createStars() {
     const container = document.querySelector('.background-stars');
