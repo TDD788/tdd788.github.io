@@ -172,7 +172,7 @@ function toggleMenu() {
   menuClickCount++;
   lastClickTime = now;
   if (menuClickCount >= 3) {
-    window.location.href = 'easteregg/index.html';
+    
     return;
   }
   var overlay = document.getElementById('overlay');
