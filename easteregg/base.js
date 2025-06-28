@@ -233,6 +233,7 @@ function createPetals(type) {
 
     const petalCount = 35;
     const petals = [];
+    const speedMultiplier = isMobileDevice() ? 1.8 : 1.0;
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
@@ -327,6 +328,7 @@ function createBrokenPetals() {
     const colors = ['#444', '#333', '#222', '#555'];
     const petalCount = 40 + Math.floor(Math.random() * 16); // entre 25 y 40
     const petals = [];
+    const speedMultiplier = isMobileDevice() ? 1.8 : 1.0;
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
@@ -343,7 +345,6 @@ function createBrokenPetals() {
         const size = 5 + Math.random() * 20;
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * -window.innerHeight;
-        const speedMultiplier = isMobileDevice() ? 1.8 : 1.0;
 
         petal.style.width = `${size}px`;
         petal.style.height = `${size}px`;
@@ -519,6 +520,24 @@ function createConfetti() {
         container.appendChild(confetti);
     }
 }
+
+function handleNegativeResponse() {
+        isSadMode = true;
+        sendResultsToEmail();
+        createBrokenPetals();
+        drawStatic(builtRegions); // Redibujar en modo triste
+        
+        // Deshabilitar botón No y cambiar estilo
+        btnNo.disabled = true;
+        btnNo.textContent = "😢";
+        btnNo.style.background = "#333";
+        btnNo.style.boxShadow = "none";
+        
+        // Cambiar texto de propuesta
+        proposalText.textContent = "Bueno...";
+        proposalText.style.color = "#aaa";
+        proposalText.style.textShadow = "0 0 10px #555";
+    }
 
 // Animación de shake para inputs vacíos
 document.head.insertAdjacentHTML('beforeend', `

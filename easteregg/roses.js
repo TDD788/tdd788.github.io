@@ -18,21 +18,21 @@ function startViewer(regions) {
     let genderSelected = false;
     let animationPaused = false;
 
-    // Ajustar resolución
-    function resizeCanvas() {
-        const dpr = window.devicePixelRatio || 1;
-        const width = canvas.clientWidth;
-        const height = canvas.clientHeight;
+let canvasW = 0;
+let canvasH = 0;
 
-        canvas.width = width * dpr;
-        canvas.height = height * dpr;
+function resizeCanvas() {
+    const dpr = window.devicePixelRatio || 1;
+    canvasW = canvas.clientWidth;
+    canvasH = canvas.clientHeight;
 
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(dpr, dpr);
+    canvas.width = canvasW * dpr;
+    canvas.height = canvasH * dpr;
 
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(dpr, dpr);
-    }
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
+}
+
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
@@ -108,8 +108,7 @@ if (currentIndex >= regions.length) {
     function drawStatic(regionsToDraw) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-        ctx.translate(canvas.clientWidth / 2, canvas.clientHeight / 2);
-
+        ctx.translate(canvasW / 2, canvasH / 2);
 
         for (const region of regionsToDraw) {
             const points = region.contour;
@@ -154,9 +153,9 @@ if (currentIndex >= regions.length) {
         
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.translate(canvasW / 2, canvasH / 2);
         ctx.rotate((angle * Math.PI) / 180);
-        ctx.drawImage(rotationImage, -canvas.width / 2, -canvas.height / 2);
+        ctx.drawImage(rotationImage, -canvasW / 2, -canvasH / 2, canvasW, canvasH);
         ctx.restore();
 
         angle = (angle + 0) % 360;
@@ -192,24 +191,6 @@ if (currentIndex >= regions.length) {
         setTimeout(() => {
             animateBuild();
         }, 2000);
-    }
-
-    function handleNegativeResponse() {
-        isSadMode = true;
-        sendResultsToEmail();
-        createBrokenPetals();
-        drawStatic(builtRegions); // Redibujar en modo triste
-        
-        // Deshabilitar botón No y cambiar estilo
-        btnNo.disabled = true;
-        btnNo.textContent = "😢";
-        btnNo.style.background = "#333";
-        btnNo.style.boxShadow = "none";
-        
-        // Cambiar texto de propuesta
-        proposalText.textContent = "Bueno...";
-        proposalText.style.color = "#aaa";
-        proposalText.style.textShadow = "0 0 10px #555";
     }
 
     function applyGrayEffect() {
@@ -248,10 +229,10 @@ document.addEventListener('keydown', (e) => {
 
         // Capturar imagen final para rotación
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = canvas.width;
-        tempCanvas.height = canvas.height;
+        tempCanvas.width = canvasW;
+        tempCanvas.height = canvasH;
         const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(canvas, 0, 0);
+        tempCtx.drawImage(canvas, 0, 0, canvasW, canvasH);
         rotationImage = tempCanvas;
 
         // Mostrar propuesta y empezar rotación si aplica
