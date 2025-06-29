@@ -11,12 +11,15 @@ let builtRegions = [];
 let rotationImage = null;
 let currentIndex = 0;
 let angle = 0;
-let animateBuild, drawStatic;
+let animateBuild;
+let drawStatic;
 let regionsData = null;
 let animationTimeout = null;
 let isRotationStarted = false;
-let rotateDrawFunction = null;
 let isAnimationComplete = false;
+let centerX = 0;
+let centerY = 0;
+let scale = 1;
 
 const elements = {
     nameScreen: document.getElementById('name-screen'),
@@ -171,13 +174,24 @@ class AudioManager {
 const audioManager = new AudioManager();
 
 function resizeCanvas() {
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvasW = elements.canvas.clientWidth;
     canvasH = elements.canvas.clientHeight;
+    
+    if (isMobileDevice()) {
+        canvasW = Math.max(canvasW, 300);
+        canvasH = Math.max(canvasH, 400);
+    }
+    
     elements.canvas.width = canvasW * dpr;
     elements.canvas.height = canvasH * dpr;
+    
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
+
+    if (builtRegions.length > 0) {
+        drawStatic(builtRegions);
+    }
 }
 
 function createRotationImage() {
@@ -317,11 +331,16 @@ function startViewer(regions) {
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-    const centerX = (minX + maxX) / 2;
-    const centerY = (minY + maxY) / 2;
-    const scale = Math.min(
-        (window.innerWidth * 0.8) / (maxX - minX),
-        (window.innerHeight * 0.8) / (maxY - minY)
+    centerX = (minX + maxX) / 2;
+    centerY = (minY + maxY) / 2;
+    
+    const paddingFactor = isMobileDevice() ? 0.7 : 0.8;
+    const availableWidth = Math.min(window.innerWidth, 600) * paddingFactor;
+    const availableHeight = Math.min(window.innerHeight, 800) * paddingFactor;
+    
+    scale = Math.min(
+        availableWidth / (maxX - minX),
+        availableHeight / (maxY - minY)
     );
 
     animateBuild = function() {
@@ -337,23 +356,31 @@ function startViewer(regions) {
         builtRegions.push(regions[currentIndex]);
         currentIndex++;
         drawStatic(builtRegions);
-        animationTimeout = setTimeout(animateBuild, 60);
+        animationTimeout = setTimeout(animateBuild, isMobileDevice() ? 100 : 60);
     };
 
     drawStatic = function(regionsToDraw) {
         ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
         ctx.save();
+        
+        const mobileAdjustment = isMobileDevice() ? 0.85 : 1.0;
         ctx.translate(canvasW / 2, canvasH / 2);
+        ctx.scale(mobileAdjustment, mobileAdjustment);
+        
         for (const region of regionsToDraw) {
             const points = region.contour;
             if (points.length < 3) continue;
+            
             const xs = points.map(p => p[0]);
             const ys = points.map(p => p[1]);
             const w = Math.max(...xs) - Math.min(...xs);
             const h = Math.max(...ys) - Math.min(...ys);
             const area = w * h;
-            const totalArea = (elements.canvas.width * elements.canvas.height) / (window.devicePixelRatio ** 2);
-            if (area > totalArea * 1) continue;
+            
+            const totalArea = (elements.canvas.width * elements.canvas.height) / (Math.pow(window.devicePixelRatio, 2));
+            const maxAllowedArea = isMobileDevice() ? totalArea * 3 : totalArea * 1;
+            
+            if (area > maxAllowedArea) continue;
             
             let r, g, b;
             if (isSadMode || !genderSelected) {
@@ -365,35 +392,36 @@ function startViewer(regions) {
             
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.beginPath();
+            
             for (let i = 0; i < points.length; i++) {
                 const x = (points[i][0] - centerX) * scale;
                 const y = (centerY - points[i][1]) * scale;
                 if (i === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
+            
             ctx.closePath();
             ctx.fill();
         }
+        
         ctx.restore();
     };
+}
 
-    rotateDrawFunction = function rotateDraw() {
-        if (isSadMode || !genderSelected || animationPaused) return;
-        ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
-        ctx.save();
-        ctx.translate(canvasW / 2, canvasH / 2);
-        ctx.rotate((angle * Math.PI) / 180);
-        if (rotationImage) {
-            ctx.drawImage(rotationImage, -canvasW / 2, -canvasH / 2, canvasW, canvasH);
-        }
-        ctx.restore();
-        angle = (angle + 0.2) % 360;
-        requestAnimationFrame(rotateDrawFunction);
-    };
-
-    if (genderSelected) {
-        animateBuild();
+function rotateDrawFunction() {
+    if (isSadMode || !genderSelected || animationPaused) return;
+    ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
+    ctx.save();
+    ctx.translate(canvasW / 2, canvasH / 2);
+    ctx.rotate((angle * Math.PI) / 180);
+    
+    if (rotationImage) {
+        ctx.drawImage(rotationImage, -canvasW / 2, -canvasH / 2, canvasW, canvasH);
     }
+    
+    ctx.restore();
+    angle = (angle + 0.2) % 360;
+    requestAnimationFrame(rotateDrawFunction);
 }
 
 function showProposal() {
@@ -616,7 +644,12 @@ function createBrokenPetals() {
 }
 
 function isMobileDevice() {
-    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(navigator.userAgent);
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|Mobile/i.test(userAgent);
+    const isSmallScreen = window.innerWidth < 768 || window.innerHeight < 500;
+    const isTablet = /iPad|Android|Tablet/i.test(userAgent) && !window.MSStream;
+    
+    return isMobile || isSmallScreen || isTablet;
 }
 
 function createHearts() {
@@ -730,14 +763,23 @@ document.addEventListener('DOMContentLoaded', () => {
     createStars();
     setupEventListeners();
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
     
-    fetch('roses.json')
-        .then(res => res.json())
-        .then(startViewer)
-        .catch(err => {
-            ctx.fillStyle = 'white';
-            ctx.font = '20px monospace';
-            ctx.fillText('Error cargando roses.json', 20, 40);
-        });
+    setTimeout(resizeCanvas, 100);
+    
+    const loadDelay = isMobileDevice() ? 500 : 0;
+    
+    setTimeout(() => {
+        window.addEventListener('resize', resizeCanvas);
+        
+        fetch('roses.json')
+            .then(res => res.json())
+            .then(data => {
+                setTimeout(() => startViewer(data), isMobileDevice() ? 200 : 0);
+            })
+            .catch(err => {
+                ctx.fillStyle = 'white';
+                ctx.font = '16px Arial';
+                ctx.fillText('Error cargando la rosa', 20, 40);
+            });
+    }, loadDelay);
 });
