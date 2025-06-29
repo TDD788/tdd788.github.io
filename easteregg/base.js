@@ -5,7 +5,6 @@ let response = '';
 let responseTimestamp = '';
 let isSadMode = false;
 let isProposalShown = false;
-let halfBuilt = false;
 let genderSelected = false;
 let animationPaused = false;
 let builtRegions = [];
@@ -18,138 +17,272 @@ let animationTimeout = null;
 let isRotationStarted = false;
 let rotateDrawFunction = null;
 let isAnimationComplete = false;
-const nameScreen = document.getElementById('name-screen');
-const senderScreen = document.getElementById('sender-screen');
-const genderScreen = document.getElementById('gender-screen');
-const overlay = document.getElementById('overlay');
-const proposal = document.getElementById('proposal');
-const answerButtons = document.getElementById('answer-buttons');
-const finalScreen = document.getElementById('final-screen');
-const finalMessage = document.getElementById('final-message');
-const resultImage = document.getElementById('result-image');
-const recipientNameInput = document.getElementById('recipient-name');
-const senderNameInput = document.getElementById('sender-name');
-const confirmRecipientBtn = document.getElementById('confirm-recipient');
-const confirmSenderBtn = document.getElementById('confirm-sender');
-const btnChico = document.getElementById('btn-chico');
-const btnChica = document.getElementById('btn-chica');
-const btnSi = document.querySelector('.btn-si');
-const btnNo = document.querySelector('.btn-no');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const proposalText = document.getElementById('proposal');
-const container = document.querySelector('.container');
-const genderSelection = document.querySelector('.centered');
+
+const elements = {
+    nameScreen: document.getElementById('name-screen'),
+    senderScreen: document.getElementById('sender-screen'),
+    genderScreen: document.getElementById('gender-screen'),
+    overlay: document.getElementById('overlay'),
+    proposal: document.getElementById('proposal'),
+    answerButtons: document.getElementById('answer-buttons'),
+    finalScreen: document.getElementById('final-screen'),
+    finalMessage: document.getElementById('final-message'),
+    recipientNameInput: document.getElementById('recipient-name'),
+    senderNameInput: document.getElementById('sender-name'),
+    confirmRecipientBtn: document.getElementById('confirm-recipient'),
+    confirmSenderBtn: document.getElementById('confirm-sender'),
+    btnChico: document.getElementById('btn-chico'),
+    btnChica: document.getElementById('btn-chica'),
+    btnSi: document.querySelector('.btn-si'),
+    btnNo: document.querySelector('.btn-no'),
+    canvas: document.getElementById('canvas'),
+    proposalText: document.getElementById('proposal'),
+    container: document.querySelector('.container'),
+    genderSelection: document.querySelector('.centered'),
+    clickSound: document.getElementById('clickSound'),
+    hoverSound: document.getElementById('hoverSound'),
+    yesSound: document.getElementById('yesSound'),
+    noSound: document.getElementById('noSound'),
+    backgroundMusic: document.getElementById('backgroundMusic')
+};
+
+const ctx = elements.canvas.getContext('2d');
 let canvasW = 0;
 let canvasH = 0;
 
-document.addEventListener('DOMContentLoaded', () => {
-    createStars();
-    setupEventListeners();
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    fetch('roses.json')
-      .then(res => res.json())
-      .then(startViewer)
-      .catch(err => {
-          console.error("❌ Error cargando JSON:", err);
-          ctx.fillStyle = 'white';
-          ctx.font = '20px monospace';
-          ctx.fillText('Error cargando roses.json', 20, 40);
-      });
-});
+class AudioManager {
+    constructor() {
+        this.sounds = {
+            click: { id: 'clickSound', element: null, canPlay: false },
+            hover: { id: 'hoverSound', element: null, canPlay: false },
+            yes: { id: 'yesSound', element: null, canPlay: false },
+            no: { id: 'noSound', element: null, canPlay: false },
+            background: { id: 'backgroundMusic', element: null, canPlay: false }
+        };
+        this.init();
+    }
+
+    init() {
+        Object.keys(this.sounds).forEach(key => {
+            const sound = this.sounds[key];
+            sound.element = document.getElementById(sound.id);
+            
+            if (!sound.element) {
+                console.warn(`Elemento de audio no encontrado: ${sound.id}`);
+                sound.canPlay = false;
+                return;
+            }
+            
+            sound.canPlay = this.checkAudioSupport(sound.element);
+            
+            if (sound.canPlay) {
+                try {
+                    const loadPromise = sound.element.load();
+                    if (loadPromise && typeof loadPromise.catch === 'function') {
+                        loadPromise.catch(e => {
+                            console.warn(`No se pudo precargar ${key}:`, e);
+                            sound.canPlay = false;
+                        });
+                    }
+                } catch (e) {
+                    console.warn(`Error al cargar ${key}:`, e);
+                    sound.canPlay = false;
+                }
+            }
+            
+            sound.element.addEventListener('error', () => {
+                console.error(`Error de carga en ${key}`);
+                sound.canPlay = false;
+            });
+        });
+        
+        this.setupBackgroundMusic();
+    }
+
+    checkAudioSupport(audioElement) {
+        if (!audioElement) return false;
+        
+        const sources = audioElement.querySelectorAll('source');
+        if (sources.length === 0) {
+            return audioElement.canPlayType(audioElement.type || 'audio/mpeg') !== '';
+        }
+        
+        for (let source of sources) {
+            if (audioElement.canPlayType(source.type) !== '') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    setupBackgroundMusic() {
+        const bg = this.sounds.background;
+        if (!bg.canPlay || !bg.element) return;
+
+        bg.element.volume = 0.1;
+        
+        const playWithFallback = () => {
+            bg.element.play().catch(e => {
+                const playOnInteraction = () => {
+                    bg.element.play()
+                        .then(() => {
+                            document.removeEventListener('click', playOnInteraction);
+                            document.removeEventListener('keydown', playOnInteraction);
+                        })
+                        .catch(console.error);
+                };
+                
+                document.addEventListener('click', playOnInteraction, { once: true });
+                document.addEventListener('keydown', playOnInteraction, { once: true });
+            });
+        };
+
+        bg.element.addEventListener('loadedmetadata', playWithFallback);
+        playWithFallback();
+    }
+
+    play(soundName) {
+        const sound = this.sounds[soundName];
+        if (!sound?.canPlay || !sound.element) return;
+
+        try {
+            sound.element.currentTime = 0;
+            sound.element.play().catch(e => {
+                this.retryPlay(soundName);
+            });
+        } catch (error) {
+            console.error(`Error con ${soundName}:`, error);
+        }
+    }
+
+    retryPlay(soundName) {
+        const sound = this.sounds[soundName];
+        if (!sound || sound.retryCount >= 2) return;
+        
+        sound.retryCount = (sound.retryCount || 0) + 1;
+        
+        setTimeout(() => {
+            sound.element.load();
+            this.play(soundName);
+        }, 300);
+    }
+}
+
+const audioManager = new AudioManager();
 
 function resizeCanvas() {
     const dpr = window.devicePixelRatio || 1;
-    canvasW = canvas.clientWidth;
-    canvasH = canvas.clientHeight;
-    canvas.width = canvasW * dpr;
-    canvas.height = canvasH * dpr;
+    canvasW = elements.canvas.clientWidth;
+    canvasH = elements.canvas.clientHeight;
+    elements.canvas.width = canvasW * dpr;
+    elements.canvas.height = canvasH * dpr;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
 }
 
 function createRotationImage() {
     const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = canvas.width;
-    tempCanvas.height = canvas.height;
+    tempCanvas.width = elements.canvas.width;
+    tempCanvas.height = elements.canvas.height;
     const tempCtx = tempCanvas.getContext('2d');
-    tempCtx.drawImage(canvas, 0, 0);
+    tempCtx.drawImage(elements.canvas, 0, 0);
     rotationImage = tempCanvas;
 }
 
 function setupEventListeners() {
-    document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.getElementById('clickSound').currentTime = 0;
-            document.getElementById('clickSound').play();
+    const handleButtonInteraction = (btn) => {
+        btn.addEventListener('mousedown', () => btn.classList.add('active'));
+        btn.addEventListener('mouseup', () => btn.classList.remove('active'));
+        btn.addEventListener('mouseleave', () => btn.classList.remove('active'));
+        
+        btn.addEventListener('click', (e) => {
+            if (e.isTrusted) {
+                audioManager.play('click');
+                btn.blur();
+            }
         });
         
         btn.addEventListener('mouseenter', () => {
-            document.getElementById('hoverSound').currentTime = 0;
-            document.getElementById('hoverSound').play();
+            if (!btn.classList.contains('disabled')) {
+                audioManager.play('hover');
+            }
         });
-    });
-    confirmRecipientBtn.addEventListener('click', handleRecipientConfirmation);
-    recipientNameInput.addEventListener('keypress', (e) => {
+    };
+
+    document.querySelectorAll('button').forEach(handleButtonInteraction);
+
+    elements.confirmRecipientBtn.addEventListener('click', handleRecipientConfirmation);
+    elements.recipientNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleRecipientConfirmation();
     });
-    confirmSenderBtn.addEventListener('click', handleSenderConfirmation);
-    senderNameInput.addEventListener('keypress', (e) => {
+
+    elements.confirmSenderBtn.addEventListener('click', handleSenderConfirmation);
+    elements.senderNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleSenderConfirmation();
     });
-    btnChico.addEventListener('click', () => {
-        senderGender = 'male';
-        genderSelected = true;
-        btnChico.classList.add('selected');
-        btnChica.classList.remove('selected');
-        startExperience();
+
+    [elements.btnChico, elements.btnChica].forEach(btn => {
+        btn.addEventListener('click', function() {
+            [elements.btnChico, elements.btnChica].forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            senderGender = this.id === 'btn-chico' ? 'male' : 'female';
+            genderSelected = true;
+            
+            if ('vibrate' in navigator) {
+                navigator.vibrate(50);
+            }
+            
+            startExperience();
+        });
     });
-    btnChica.addEventListener('click', () => {
-        senderGender = 'female';
-        genderSelected = true;
-        btnChica.classList.add('selected');
-        btnChico.classList.remove('selected');
-        startExperience();
+
+    elements.btnSi.addEventListener('click', () => {
+        if (isProposalShown) handlePositiveResponse();
     });
-    btnSi.addEventListener('click', handlePositiveResponse);
-    btnNo.addEventListener('click', handleNegativeResponse);
-    document.addEventListener('keydown', handleKeyPress);
+    
+    elements.btnNo.addEventListener('click', () => {
+        if (isProposalShown) handleNegativeResponse();
+    });
+
+    let lastKeyPress = 0;
+    document.addEventListener('keydown', (e) => {
+        const now = Date.now();
+        if (now - lastKeyPress > 300) {
+            if (e.key === 's' || e.key === 'S') {
+                skipAnimation();
+            }
+            lastKeyPress = now;
+        }
+    });
 }
 
 function handleRecipientConfirmation() {
-    recipientName = recipientNameInput.value.trim();
+    recipientName = elements.recipientNameInput.value.trim();
     if (recipientName === '') {
-        recipientNameInput.placeholder = '¡Por favor escribe tu nombre!';
-        recipientNameInput.style.animation = 'shake 0.5s';
+        elements.recipientNameInput.placeholder = '¡Por favor escribe tu nombre!';
+        elements.recipientNameInput.style.animation = 'shake 0.5s';
         setTimeout(() => {
-            recipientNameInput.style.animation = '';
+            elements.recipientNameInput.style.animation = '';
         }, 500);
         return;
     }
-    nameScreen.classList.add('hidden');
-    senderScreen.classList.remove('hidden');
+    elements.nameScreen.classList.add('hidden');
+    elements.senderScreen.classList.remove('hidden');
 }
 
 function handleSenderConfirmation() {
-    senderName = senderNameInput.value.trim();
+    senderName = elements.senderNameInput.value.trim();
     if (senderName === '') {
-        senderNameInput.placeholder = '¡Por favor escribe un nombre!';
-        senderNameInput.style.animation = 'shake 0.5s';
+        elements.senderNameInput.placeholder = '¡Por favor escribe un nombre!';
+        elements.senderNameInput.style.animation = 'shake 0.5s';
         setTimeout(() => {
-            senderNameInput.style.animation = '';
+            elements.senderNameInput.style.animation = '';
         }, 500);
         return;
     }
-    senderScreen.classList.add('hidden');
-    genderScreen.classList.remove('hidden');
+    elements.senderScreen.classList.add('hidden');
+    elements.genderScreen.classList.remove('hidden');
     document.getElementById('gender-question').textContent = `${recipientName}, ¿Sos Hombre o Mujer?`;
-}
-
-function handleKeyPress(e) {
-    if (e.key === 's' || e.key === 'S') {
-        skipAnimation();
-    }
 }
 
 function skipAnimation() {
@@ -167,10 +300,9 @@ function skipAnimation() {
 }
 
 function startExperience() {
-    genderScreen.classList.add('hidden');
-    overlay.classList.remove('hidden');
-    const proposalText = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'o' : 'a'}?`;
-    document.getElementById('proposal').textContent = proposalText;
+    elements.genderScreen.classList.add('hidden');
+    elements.overlay.classList.remove('hidden');
+    elements.proposalText.textContent = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'o' : 'a'}?`;
     if (regionsData) {
         animateBuild();
     }
@@ -185,12 +317,13 @@ function startViewer(regions) {
     const maxX = Math.max(...xs);
     const minY = Math.min(...ys);
     const maxY = Math.max(...ys);
-    centerX = (minX + maxX) / 2;
-    centerY = (minY + maxY) / 2;
-    scale = Math.min(
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+    const scale = Math.min(
         (window.innerWidth * 0.8) / (maxX - minX),
         (window.innerHeight * 0.8) / (maxY - minY)
     );
+
     animateBuild = function() {
         if (animationPaused || !genderSelected) return;
         if (currentIndex >= regions.length) {
@@ -203,19 +336,12 @@ function startViewer(regions) {
         }
         builtRegions.push(regions[currentIndex]);
         currentIndex++;
-        if (currentIndex >= regions.length) {
-            createRotationImage();
-            isRotationStarted = true;
-            isAnimationComplete = true;
-            requestAnimationFrame(rotateDrawFunction);
-            showProposal();
-            return;
-        }
         drawStatic(builtRegions);
         animationTimeout = setTimeout(animateBuild, 60);
     };
+
     drawStatic = function(regionsToDraw) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
         ctx.save();
         ctx.translate(canvasW / 2, canvasH / 2);
         for (const region of regionsToDraw) {
@@ -226,8 +352,9 @@ function startViewer(regions) {
             const w = Math.max(...xs) - Math.min(...xs);
             const h = Math.max(...ys) - Math.min(...ys);
             const area = w * h;
-            const totalArea = (canvas.width * canvas.height) / (window.devicePixelRatio ** 2);
+            const totalArea = (elements.canvas.width * elements.canvas.height) / (window.devicePixelRatio ** 2);
             if (area > totalArea * 1) continue;
+            
             let r, g, b;
             if (isSadMode || !genderSelected) {
                 const avg = region.color.reduce((a, c) => a + c, 0) / 3 * 255;
@@ -235,6 +362,7 @@ function startViewer(regions) {
             } else {
                 [r, g, b] = region.color.map(c => Math.round(c * 255));
             }
+            
             ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
             ctx.beginPath();
             for (let i = 0; i < points.length; i++) {
@@ -248,9 +376,10 @@ function startViewer(regions) {
         }
         ctx.restore();
     };
+
     rotateDrawFunction = function rotateDraw() {
         if (isSadMode || !genderSelected || animationPaused) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, elements.canvas.width, elements.canvas.height);
         ctx.save();
         ctx.translate(canvasW / 2, canvasH / 2);
         ctx.rotate((angle * Math.PI) / 180);
@@ -261,10 +390,7 @@ function startViewer(regions) {
         angle = (angle + 0.2) % 360;
         requestAnimationFrame(rotateDrawFunction);
     };
-    function applyGrayEffect() {
-        container.style.filter = "grayscale(80%) brightness(0.7)";
-        container.style.transition = "filter 1.5s ease";
-    }
+
     if (genderSelected) {
         animateBuild();
     }
@@ -272,50 +398,52 @@ function startViewer(regions) {
 
 function showProposal() {
     isProposalShown = true;
-    proposalText.textContent = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'o' : 'a'}?`;
-    overlay.classList.add('visible');
+    elements.proposalText.textContent = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'o' : 'a'}?`;
+    elements.overlay.classList.add('visible');
     setTimeout(() => {
-        answerButtons.classList.remove('hidden');
+        elements.answerButtons.classList.remove('hidden');
     }, 1000);
 }
 
 function handlePositiveResponse() {
     if (!isProposalShown) return;
-    document.getElementById('yesSound').play();
-    document.getElementById('magicSound').play();
-    answerButtons.classList.add('hidden');
+    
+    audioManager.play('yes');
+    elements.answerButtons.classList.add('hidden');
     response = 'Sí';
     responseTimestamp = new Date().toISOString();
     createHearts();
     createConfetti();
     createPetals('happy');
-    proposal.textContent = `¡${recipientName}, Gracias! 💖`;
+    elements.proposal.textContent = `¡${recipientName}, Gracias! 💖`;
+    
     setTimeout(() => {
-        overlay.classList.add('hidden');
-        finalScreen.classList.remove('hidden');
-        finalMessage.textContent = `¡Felicidades ${recipientName} y ${senderName}!`;        
+        elements.overlay.classList.add('hidden');
+        elements.finalScreen.classList.remove('hidden');
+        elements.finalMessage.textContent = `¡Felicidades ${recipientName} y ${senderName}!`;        
         sendResultsToEmail();
     }, 3000);
 }
 
 function handleNegativeResponse() {
     if (!isProposalShown) return;
-    document.getElementById('noSound').play();
-    answerButtons.classList.add('hidden');
+    
+    audioManager.play('no');
+    elements.answerButtons.classList.add('hidden');
     response = 'No';
     responseTimestamp = new Date().toISOString();
     isSadMode = true;
     document.body.style.background = 'linear-gradient(135deg, #3b3b3b, #2b2b2b)';
-    overlay.style.background = 'rgba(30, 30, 30, 0.8)';
+    elements.overlay.style.background = 'rgba(30, 30, 30, 0.8)';
     createBrokenPetals();
     drawStatic(builtRegions);
-    btnNo.disabled = true;
-    btnNo.textContent = "😢";
-    btnNo.style.background = "#333";
-    btnNo.style.boxShadow = "none";
-    proposal.textContent = "Bueno...";
-    proposal.style.color = "#aaa";
-    proposal.style.textShadow = "0 0 10px #555";
+    elements.btnNo.disabled = true;
+    elements.btnNo.textContent = "😢";
+    elements.btnNo.style.background = "#333";
+    elements.btnNo.style.boxShadow = "none";
+    elements.proposal.textContent = "Bueno...";
+    elements.proposal.style.color = "#aaa";
+    elements.proposal.style.textShadow = "0 0 10px #555";
     sendResultsToEmail();
 }
 
@@ -331,25 +459,6 @@ function createStars() {
         star.style.height = star.style.width;
         star.style.animationDuration = `${Math.random() * 3 + 2}s`;
         container.appendChild(star);
-    }
-}
-
-function createHearts() {
-    const container = document.querySelector('.hearts');
-    container.innerHTML = '';
-    for (let i = 0; i < 50; i++) {
-        setTimeout(() => {
-            const heart = document.createElement('div');
-            heart.classList.add('heart-animation');
-            heart.innerHTML = '❤️';
-            heart.style.left = `${Math.random() * 100}%`;
-            heart.style.fontSize = `${Math.random() * 2 + 1}rem`;
-            heart.style.animationDuration = `${Math.random() * 4 + 3}s`;
-            document.body.appendChild(heart);
-            setTimeout(() => {
-                heart.remove();
-            }, 5000);
-        }, i * 200);
     }
 }
 
@@ -374,7 +483,6 @@ function createPetals(type) {
         const size = type === 'happy' ? (10 + Math.random() * 20) : (5 + Math.random() * 15);
         const x = Math.random() * window.innerWidth;
         const y = Math.random() * -window.innerHeight;
-        const speedMultiplier = isMobileDevice() ? 1.8 : 1.0;
         petal.style.width = `${size}px`;
         petal.style.height = `${size}px`;
         petal.style.position = 'absolute';
@@ -388,7 +496,6 @@ function createPetals(type) {
             el: petal,
             x: x,
             y: y,
-            
             vx: Math.random() * 1 - 0.5,
             vy: (1 + Math.random() * 1.5) * speedMultiplier,
             swayPhase: Math.random() * Math.PI * 2,
@@ -584,7 +691,6 @@ async function sendResultsToEmail() {
     try {
         emailjs.init('TvUXS6A7728U1RtOd');
         if (!recipientName || !senderName || !response) {
-            console.error('Faltan datos obligatorios');
             return false;
         }
         let response_color = '#3498db';
@@ -614,33 +720,24 @@ async function sendResultsToEmail() {
             'template_40o3wty',
             templateParams
         );
-        console.log('📧 Correo enviado exitosamente:', emailResponse.status);
         return true;
     } catch (error) {
-        console.error('❌ Error al enviar el correo:', error);
         return false;
     }
 }
-document.head.insertAdjacentHTML('beforeend', `
-    <style>
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-    </style>
-`);
 
 document.addEventListener('DOMContentLoaded', () => {
-  const backgroundMusic = document.getElementById('backgroundMusic');
-  backgroundMusic.volume = 0.1;
-  const playPromise = backgroundMusic.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(error => {
-      document.body.addEventListener('click', () => {
-        backgroundMusic.play();
-      }, { once: true });
-      console.log("Reproduce la música haciendo clic en cualquier parte de la página");
-    });
-  }
+    createStars();
+    setupEventListeners();
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    
+    fetch('roses.json')
+        .then(res => res.json())
+        .then(startViewer)
+        .catch(err => {
+            ctx.fillStyle = 'white';
+            ctx.font = '20px monospace';
+            ctx.fillText('Error cargando roses.json', 20, 40);
+        });
 });
