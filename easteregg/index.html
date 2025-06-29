@@ -14,21 +14,18 @@
     <div class="hearts"></div>
     
     <div class="container">
-        <!-- Pantalla inicial para ingresar nombre -->
         <div id="name-screen" class="centered">
             <div class="neon-text">¿Cuál es tu nombre?</div>
             <input type="text" id="recipient-name" placeholder="¿Cuál es tu nombre?" class="name-input">
             <button id="confirm-recipient" class="name-button">Continuar</button>
         </div>
 
-        <!-- Pantalla para ingresar el remitente -->
         <div id="sender-screen" class="centered hidden">
             <div class="neon-text">¿Quién te lo mandó?</div>
             <input type="text" id="sender-name" placeholder="¿Quién te lo mandó?" class="name-input">
             <button id="confirm-sender" class="name-button">Continuar</button>
         </div>
         
-        <!-- Pantalla de selección de género -->
         <div id="gender-screen" class="centered hidden">
             <div class="neon-text" id="gender-question">¿Eres chico o chica?</div>
             <div class="button-container">
@@ -37,7 +34,6 @@
             </div>
         </div>
         
-        <!-- Pantalla de propuesta -->
         <div id="overlay" class="hidden">
             <div id="proposal">¿Quieres ser mi novia?</div>
             <div id="answer-buttons" class="hidden">
@@ -46,7 +42,6 @@
             </div>
         </div>
         
-        <!-- Pantalla final -->
         <div id="final-screen" class="centered hidden">
             <div class="neon-text" id="final-message"></div>
             <div id="result-image"></div>
@@ -57,6 +52,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.js"></script>
     <script src="base.js"></script>
-    <script src="roses.js"></script>
+
 </body>
 </html>
