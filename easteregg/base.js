@@ -79,6 +79,17 @@ function createRotationImage() {
 }
 
 function setupEventListeners() {
+    document.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.getElementById('clickSound').currentTime = 0;
+            document.getElementById('clickSound').play();
+        });
+        
+        btn.addEventListener('mouseenter', () => {
+            document.getElementById('hoverSound').currentTime = 0;
+            document.getElementById('hoverSound').play();
+        });
+    });
     confirmRecipientBtn.addEventListener('click', handleRecipientConfirmation);
     recipientNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') handleRecipientConfirmation();
@@ -158,7 +169,7 @@ function skipAnimation() {
 function startExperience() {
     genderScreen.classList.add('hidden');
     overlay.classList.remove('hidden');
-    const proposalText = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'a' : 'o'}?`;
+    const proposalText = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'o' : 'a'}?`;
     document.getElementById('proposal').textContent = proposalText;
     if (regionsData) {
         animateBuild();
@@ -216,7 +227,7 @@ function startViewer(regions) {
             const h = Math.max(...ys) - Math.min(...ys);
             const area = w * h;
             const totalArea = (canvas.width * canvas.height) / (window.devicePixelRatio ** 2);
-            if (area > totalArea * 0.8) continue;
+            if (area > totalArea * 1) continue;
             let r, g, b;
             if (isSadMode || !genderSelected) {
                 const avg = region.color.reduce((a, c) => a + c, 0) / 3 * 255;
@@ -254,7 +265,6 @@ function startViewer(regions) {
         container.style.filter = "grayscale(80%) brightness(0.7)";
         container.style.transition = "filter 1.5s ease";
     }
-
     if (genderSelected) {
         animateBuild();
     }
@@ -262,7 +272,7 @@ function startViewer(regions) {
 
 function showProposal() {
     isProposalShown = true;
-    proposalText.textContent = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'a' : 'o'}?`;
+    proposalText.textContent = `¿${recipientName}, quieres ser mi novi${senderGender === 'male' ? 'o' : 'a'}?`;
     overlay.classList.add('visible');
     setTimeout(() => {
         answerButtons.classList.remove('hidden');
@@ -271,13 +281,15 @@ function showProposal() {
 
 function handlePositiveResponse() {
     if (!isProposalShown) return;
+    document.getElementById('yesSound').play();
+    document.getElementById('magicSound').play();
     answerButtons.classList.add('hidden');
     response = 'Sí';
     responseTimestamp = new Date().toISOString();
     createHearts();
     createConfetti();
-    createPetals('happy')
-    proposal.textContent = `¡${recipientName}, aceptaste ser mi novi${senderGender === 'male' ? 'a' : 'o'}! 💖`;
+    createPetals('happy');
+    proposal.textContent = `¡${recipientName}, Gracias! 💖`;
     setTimeout(() => {
         overlay.classList.add('hidden');
         finalScreen.classList.remove('hidden');
@@ -288,12 +300,13 @@ function handlePositiveResponse() {
 
 function handleNegativeResponse() {
     if (!isProposalShown) return;
+    document.getElementById('noSound').play();
     answerButtons.classList.add('hidden');
     response = 'No';
     responseTimestamp = new Date().toISOString();
     isSadMode = true;
-    document.body.style.background = 'black';
-    overlay.style.background = 'rgba(0, 0, 0, 0.8)';
+    document.body.style.background = 'linear-gradient(135deg, #3b3b3b, #2b2b2b)';
+    overlay.style.background = 'rgba(30, 30, 30, 0.8)';
     createBrokenPetals();
     drawStatic(builtRegions);
     btnNo.disabled = true;
@@ -617,3 +630,17 @@ document.head.insertAdjacentHTML('beforeend', `
         }
     </style>
 `);
+
+document.addEventListener('DOMContentLoaded', () => {
+  const backgroundMusic = document.getElementById('backgroundMusic');
+  backgroundMusic.volume = 0.1;
+  const playPromise = backgroundMusic.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(error => {
+      document.body.addEventListener('click', () => {
+        backgroundMusic.play();
+      }, { once: true });
+      console.log("Reproduce la música haciendo clic en cualquier parte de la página");
+    });
+  }
+});

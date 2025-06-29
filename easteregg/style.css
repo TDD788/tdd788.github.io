@@ -606,3 +606,13 @@ canvas {
     width: 90%;
   }
 }
+
+audio {
+    display: none;
+    position: absolute;
+    visibility: hidden;
+}
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
